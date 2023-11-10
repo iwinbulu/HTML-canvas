@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HTML5 Canvas</title>
+  </head>
+  <body>
+    <canvas id="draw" width="800" height="800"> </canvas>
+
+    <img src="image/aperture-vintage.jpg" alt="aperture-vintage" srcset="" />
+
+    <script>
+      // Get the canvas element
+      const canvas = document.getElementById("draw");
+
+      // Get the 2D drawing context
+      const ctx = canvas.getContext("2d");
+
+      // Set initial canvas size to match window dimensions
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      // Set initial drawing styles
+      ctx.strokeStyle = "#27debf"; // Stroke color
+      ctx.lineJoin = "round"; // Type of connection between lines
+      ctx.lineCap = "round"; // Type of line cap at the end of the path
+      ctx.lineWidth = 50; // Set your desired line width
+      ctx.globalCompositeOperation = "multiply"; // Set the blending mode, more options: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
+
+      // Initialize variables for drawing
+      let isDrawing = false; // Flag to track if the user is drawing
+      let lastX = 0; // Last X coordinate
+      let lastY = 0; // Last Y coordinate
+      let hue = 0; // Initial hue for the stroke color
+      let direction = true; // Flag to control whether to increase or decrease line width
+
+      // Function to handle drawing
+      function draw(e) {
+        if (!isDrawing) return; // Stop the function from running when the mouse button is not pressed
+
+        // Update stroke color and line width based on hue
+        ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+        ctx.lineWidth = hue;
+
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY); // Move to the starting point
+        ctx.lineTo(e.clientX, e.clientY); // Draw a line to the current mouse position
+        ctx.stroke(); // Apply the stroke
+
+        // Update lastX and lastY to the current mouse position
+        [lastX, lastY] = [e.clientX, e.clientY];
+
+        // Update hue for the next iteration, reset if it reaches 360
+        hue++;
+        if (hue >= 360) {
+          hue = 0;
+        }
+
+        // Check and update line width direction
+        if (ctx.lineWidth >= 500 || ctx.lineWidth <= 1) {
+          direction = !direction;
+        }
+
+        if (direction) {
+          ctx.lineWidth++; // Increase line width
+        } else {
+          ctx.lineWidth--; // Decrease line width
+        }
+      }
+
+      // Event listeners for mouse actions
+      canvas.addEventListener("mousemove", draw);
+      canvas.addEventListener("mousedown", (e) => {
+        isDrawing = true;
+        // Set the starting point for drawing
+        [lastX, lastY] = [e.clientX, e.clientY];
+      });
+      canvas.addEventListener("mouseup", () => (isDrawing = false));
+      canvas.addEventListener("mouseout", () => (isDrawing = false));
+    </script>
+
+    <p>
+      Photo by
+      <a
+        href="https://unsplash.com/@aperturevintage?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
+        >Aperture Vintage</a
+      >
+      on
+      <a
+        href="https://unsplash.com/photos/a-colorful-background-with-lines-of-different-colors-GlsKHybjdS0?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
+        >Unsplash</a
+      >
+    </p>
+
+    <style>
+      html,
+      body {
+        margin: 0;
+      }
+
+      img {
+        position: relative;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 80%;
+      }
+      p {
+        font-size: 1.1em;
+        font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
+          sans-serif;
+        text-align: center;
+      }
+      a {
+        color: #27debf;
+      }
+    </style>
+  </body>
+</html>
